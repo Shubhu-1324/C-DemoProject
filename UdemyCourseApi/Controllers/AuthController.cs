@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using UdemyCourseApi.Data;
-using UdemyCourseApi.ExceptionHandler;
-using UdemyCourseApi.Models.Domain;
 using UdemyCourseApi.Models.DTO;
+using UdemyCourseApi.Repositories;
 
 namespace UdemyCourseApi.Controllers
 {
@@ -11,53 +11,73 @@ namespace UdemyCourseApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        
-        private readonly NZWalksDBCOntext dbContex;
+        // post method
 
-        public AuthController(NZWalksDBCOntext dbContext)
+        public AuthController(UserManager<IdentityUser> userManager , ITokenRepository tokenRepository, IMapper mapper)
         {
-            this.dbContex = dbContext;
+            UserManager=userManager;
+            TokenRepository=tokenRepository;
+            Mapper=mapper;
         }
-        [HttpGet]
-        public IActionResult GetAllUsers()
-        {
-            var users=dbContex.User.ToList();
-            if (users==null)
-            {
-                return NotFound();
-            }
 
-            List<ResponseRegisterUser>responseRegisterUsers = new List<ResponseRegisterUser>();
-            foreach(var user in users)
-            {
-                responseRegisterUsers.Add(new ResponseRegisterUser()
-                {
-                    Email = user.Email,
-                    MobileNumber = user.MobileNumber,
-                    Password = user.Password,
-                    Name=user.Name
-                });
-            }
-            return Ok(responseRegisterUsers);
-        }
+        public UserManager<IdentityUser> UserManager { get; }
+        public ITokenRepository TokenRepository { get; }
+        public IMapper Mapper { get; }
+
         [HttpPost]
-        public IActionResult SaveUser([FromBody] RegisterUser user)
+        [Route("Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
         {
-            if (!user.Password.Equals(user.ConfirmPassword)){
-                 //throw new PasswordMissMatchException("PassWrod are not matching");
-                 return BadRequest(user.ConfirmPassword);
-            }
-            User userDomain=new User();
-            userDomain.Email = user.Email;
-            userDomain.MobileNumber = user.MobileNumber;
-            userDomain.Password = user.Password;
-            userDomain.Name = user.Name;
-            
-            dbContex.User.Add(userDomain);
-            dbContex.SaveChanges();
+            var identitUser = new IdentityUser
+            {
+                UserName=registerRequestDto.Username,
+                Email=registerRequestDto.Username
+            };
+            var identityResult = await UserManager.CreateAsync(identitUser, registerRequestDto.Password);
 
-            return Ok(userDomain);
-            
+            if (identityResult.Succeeded)
+            {
+                if (registerRequestDto.Roles!=null && registerRequestDto.Roles.Any())
+                {
+                    identityResult= await UserManager.AddToRolesAsync(identitUser, registerRequestDto.Roles);
+                    if (identityResult.Succeeded)
+                    {
+                        return Ok(identityResult);
+                    }
+
+                }
+
+            }
+
+
+            return BadRequest("Something went wrong");
+
+        }
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] AddRequestLoginDto addRequestLoginDto)
+        {
+            var user =await UserManager.FindByEmailAsync(addRequestLoginDto.Username);
+
+            if (user!=null)
+            {
+
+                var checkPassword=await UserManager.CheckPasswordAsync(user,addRequestLoginDto.Password);
+                if (checkPassword)
+                {
+                    var roles = await UserManager.GetRolesAsync(user);
+                    if(roles!=null) {
+                        var jwtToken=TokenRepository.createJWTToken(user, roles.ToList());
+
+                        var response=Mapper.Map<LoginResponse>(user);
+                        response.jwtToken = jwtToken;   
+                        return Ok(response);
+                    }
+                  
+                }
+            }
+            return BadRequest("UserName and password incorrect");
         }
     }
 }

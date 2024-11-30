@@ -5,7 +5,7 @@ namespace UdemyCourseApi.Data
 {
     public class NZWalksDBCOntext:DbContext
     {
-        public NZWalksDBCOntext( DbContextOptions dbContextOptions):base(dbContextOptions)
+        public NZWalksDBCOntext( DbContextOptions<NZWalksDBCOntext> dbContextOptions):base(dbContextOptions)
         {
                 
         }

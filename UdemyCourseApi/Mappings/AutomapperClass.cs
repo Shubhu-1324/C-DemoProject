@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using UdemyCourseApi.Models.Domain;
 using UdemyCourseApi.Models.DTO;
 
@@ -16,6 +17,7 @@ namespace UdemyCourseApi.Mappings
             CreateMap<Walk,WalkDto>().ReverseMap();
             CreateMap<Difficulty, DifficultyDto>().ReverseMap();
             CreateMap<UpdateWalk, Walk>().ReverseMap();
+            CreateMap<IdentityUser, LoginResponse>().ReverseMap();
 
         }
     }
