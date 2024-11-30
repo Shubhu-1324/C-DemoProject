@@ -19,6 +19,18 @@ namespace UdemyCourseApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+
+
+             builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            {
+                // Set the WebRootPath before building the application
+                WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")
+            });
+
+
+
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.Configureswagger();
@@ -27,8 +39,8 @@ namespace UdemyCourseApi
             builder.Services.AutomapperCollection();
             builder.Services.IdentityCollection();
 
-
-           builder.Services.AutheticationCollection(builder.Configuration);
+           
+            builder.Services.AutheticationCollection(builder.Configuration);
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -43,7 +55,7 @@ namespace UdemyCourseApi
 
             app.UseAuthorization();
 
-
+            app.UseStaticFiles();
             app.MapControllers();
 
             app.Run();
