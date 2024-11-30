@@ -1,2 +1,1 @@
-# C-DemoProject
-C# demo project
+# UdemyCourse
