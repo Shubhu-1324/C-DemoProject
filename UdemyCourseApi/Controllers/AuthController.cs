@@ -28,32 +28,51 @@ namespace UdemyCourseApi.Controllers
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
         {
-            var identitUser = new IdentityUser
+            var identityUser = new IdentityUser
             {
-                UserName=registerRequestDto.Username,
-                Email=registerRequestDto.Username
+                UserName = registerRequestDto.Username,
+                Email = registerRequestDto.Username,
+                PhoneNumber = registerRequestDto.PhoneNumber
             };
-            var identityResult = await UserManager.CreateAsync(identitUser, registerRequestDto.Password);
+
+            var identityResult = await UserManager.CreateAsync(identityUser, registerRequestDto.Password);
 
             if (identityResult.Succeeded)
             {
-                if (registerRequestDto.Roles!=null && registerRequestDto.Roles.Any())
+                if (registerRequestDto.Roles != null && registerRequestDto.Roles.Any())
                 {
-                    identityResult= await UserManager.AddToRolesAsync(identitUser, registerRequestDto.Roles);
+                    identityResult = await UserManager.AddToRolesAsync(identityUser, registerRequestDto.Roles);
+
                     if (identityResult.Succeeded)
                     {
-                        return Ok(identityResult);
+                        var response = new ResponseAuthDto
+                        {
+                            Success = true,
+                            Message = "User is Registered successfully",
+                            Errors = null
+                        };
+                        return Ok(response);
                     }
-
+                    else
+                    {
+                        var response = Mapper.Map<ResponseAuthDto>(identityResult);
+                        response.Message = "Failed to add roles to the user.";
+                        return BadRequest(response);
+                    }
                 }
-
+                else
+                {
+                    var failureResponse1 = Mapper.Map<ResponseAuthDto>(identityResult);
+                    failureResponse1.Message = "Failed to register user.";
+                    return BadRequest(failureResponse1);
+                }
+            
             }
-
-
-            return BadRequest("Something went wrong");
+            var failureResponse = Mapper.Map<ResponseAuthDto>(identityResult);
+            failureResponse.Message = "Failed to register user.";
+            return BadRequest(failureResponse);
 
         }
-
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] AddRequestLoginDto addRequestLoginDto)

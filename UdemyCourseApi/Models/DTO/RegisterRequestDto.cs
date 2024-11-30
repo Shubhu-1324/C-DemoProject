@@ -17,5 +17,8 @@ namespace UdemyCourseApi.Models.DTO
         public string Password { get; set; }    
     
         public string[] Roles {  get; set; }     
+
+        [DataType(DataType.PhoneNumber)]
+        public string PhoneNumber { get; set; }
     }
 }

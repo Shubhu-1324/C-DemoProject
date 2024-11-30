@@ -18,6 +18,10 @@ namespace UdemyCourseApi.Mappings
             CreateMap<Difficulty, DifficultyDto>().ReverseMap();
             CreateMap<UpdateWalk, Walk>().ReverseMap();
             CreateMap<IdentityUser, LoginResponse>().ReverseMap();
+            CreateMap<IdentityResult, ResponseAuthDto>()
+             .ForMember(dest => dest.Success, opt => opt.MapFrom(src => src.Succeeded))
+             .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Succeeded ? "Operation successful" : "Operation failed"))
+             .ForMember(dest => dest.Errors, opt => opt.MapFrom(src => src.Errors.Select(e => e.Description)));
 
         }
     }
