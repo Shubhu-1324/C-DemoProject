@@ -22,6 +22,10 @@ namespace UdemyCourseApi.Mappings
              .ForMember(dest => dest.Success, opt => opt.MapFrom(src => src.Succeeded))
              .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Succeeded ? "Operation successful" : "Operation failed"))
              .ForMember(dest => dest.Errors, opt => opt.MapFrom(src => src.Errors.Select(e => e.Description)));
+            CreateMap<ProductRequestDto, Product>()
+                .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
+
+            CreateMap<Product, ProductResponseDto>();
 
         }
     }

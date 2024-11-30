@@ -15,6 +15,10 @@ namespace UdemyCourseApi.Extension
             // Add the second DbContext
             services.AddDbContext<NzWalksAuthDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("NZWalksAuthConnectionString")));
+
+            services.AddDbContext<ProductHandlerDb>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("EcartService"))
+            );
         }
     }
 }
