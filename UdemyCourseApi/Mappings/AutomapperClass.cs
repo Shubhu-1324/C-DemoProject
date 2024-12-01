@@ -26,6 +26,7 @@ namespace UdemyCourseApi.Mappings
                 .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
 
             CreateMap<Product, ProductResponseDto>();
+           // CreateMap<Update>();
 
         }
     }

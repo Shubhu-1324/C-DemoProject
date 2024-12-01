@@ -22,10 +22,59 @@ namespace UdemyCourseApi.Controllers
         {
             try
             {
-                 var ProductResponseDto=await _productRepository.AddProductAsync(productRequestDto);
-            return Ok(ProductResponseDto);
+                var ProductResponseDto = await _productRepository.AddProductAsync(productRequestDto);
+                return Ok(ProductResponseDto);
+            } catch (Exception ex) { return BadRequest(ex.Message); }
+
+        }
+        [HttpGet]
+        [Route("getAllProduct")]
+        public async Task<IActionResult> GetAllProduct()
+        {
+            try
+            {
+                var productList=await _productRepository.GetAllProductAsync();  
+                return Ok(productList);
             }catch(Exception ex) { return BadRequest(ex.Message); }
-           
+        }
+
+
+        [HttpGet]
+        [Route("getProductById")]
+        public async Task<IActionResult>GetProductById(Guid guid)
+        {
+            try
+            {
+                var product=await _productRepository.GetProductById(guid);
+                return Ok(product); 
+            }catch(Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpPut]
+        [Route("updateProduct")]
+
+        public async Task<IActionResult> UpdateProduct(Guid id,[FromForm] UpdateProductDto UpdateProductDto)
+        {
+            try
+            {
+                var UpdatedPropduct = await _productRepository.UpdateProduct(id,UpdateProductDto);
+                return Ok(UpdatedPropduct);
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);  
+            }
+        }
+
+        [HttpDelete]
+        [Route("deleteProduct")]
+
+        public async Task<IActionResult> DeleteProductById(Guid id)
+        {
+            try
+            {
+                var deleteProduct=await _productRepository.DeleteProductAsync(id);
+                return Ok(deleteProduct);
+            }catch(Exception ex) { return BadRequest(ex.Message); }
         }
     }
 }

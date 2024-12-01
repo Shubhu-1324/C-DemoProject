@@ -21,8 +21,8 @@ namespace UdemyCourseApi.Models.Domain
         [Required(ErrorMessage = "Stock is required.")]
         [Range(0, int.MaxValue, ErrorMessage = "Stock must be a non-negative number.")]
         public int? Stock { get; set; }             
-        public string ImageUrl { get; set; }        
-        public bool IsAvailable { get; set; }
+        public string ImageUrl { get; set; }
+        public bool IsAvailable { get; set; } = true;
 
         public DateTime CreatedDate { get; set; }  
         public DateTime? UpdatedDate { get; set; }
