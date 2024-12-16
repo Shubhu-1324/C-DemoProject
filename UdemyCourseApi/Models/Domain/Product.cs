@@ -22,9 +22,11 @@ namespace UdemyCourseApi.Models.Domain
         [Range(0, int.MaxValue, ErrorMessage = "Stock must be a non-negative number.")]
         public int? Stock { get; set; }             
         public string ImageUrl { get; set; }
+        public ICollection<ProductImages> Images { get; set; } = new List<ProductImages>();
         public bool IsAvailable { get; set; } = true;
 
         public DateTime CreatedDate { get; set; }  
         public DateTime? UpdatedDate { get; set; }
+
     }
 }

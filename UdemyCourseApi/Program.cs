@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -11,7 +10,6 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using UdemyCourseApi.Extension;
 
-
 namespace UdemyCourseApi
 {
     public class Program
@@ -20,27 +18,42 @@ namespace UdemyCourseApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
-
-             builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            builder = WebApplication.CreateBuilder(new WebApplicationOptions
             {
                 // Set the WebRootPath before building the application
                 WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")
             });
 
-
-
-
+            // Add services to the container.
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            // CORS policy configuration
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins", policy =>
+                {
+                    policy.AllowAnyOrigin()       // Allow all origins (or replace with specific URL for security)
+                        .AllowAnyMethod()        // Allow any HTTP method (GET, POST, etc.)
+                        .AllowAnyHeader();       // Allow any headers
+                });
+            });
+
+            // Configure Swagger
             builder.Services.Configureswagger();
+
+            // Add database contexts
             builder.Services.AddCustomDatabaseContexts(builder.Configuration);
+
+            // Add repositories and automapper
             builder.Services.RepositoryCollection();
             builder.Services.AutomapperCollection();
+
+            // Add Identity services
             builder.Services.IdentityCollection();
 
-           
+            // Authentication setup
             builder.Services.AutheticationCollection(builder.Configuration);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -50,14 +63,23 @@ namespace UdemyCourseApi
                 app.UseSwaggerUI();
             }
 
+            // Use HTTPS redirection
             app.UseHttpsRedirection();
-            app.UseAuthentication();
 
+            // Enable authentication and authorization
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            // Enable static file serving
             app.UseStaticFiles();
+
+            // Use the CORS policy
+            app.UseCors("AllowAllOrigins");
+
+            // Map controllers
             app.MapControllers();
 
+            // Run the application
             app.Run();
         }
     }

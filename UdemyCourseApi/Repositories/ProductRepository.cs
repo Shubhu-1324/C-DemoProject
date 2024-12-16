@@ -104,6 +104,51 @@ public class ProductRepository:IProductRepository
 
     }
 
+    public async Task<IEnumerable<Result<ProductResponseDto>>> GetAllLatestProductAsync()
+    {
+        try
+        {
+            var products = await _productHandler.Products
+                                                  .OrderByDescending(p => p.CreatedDate)
+                                                  .ToListAsync();
+
+            // Ensure that products are not null or empty
+            if (products == null || !products.Any())
+            {
+                return new List<Result<ProductResponseDto>>
+            {
+                Result<ProductResponseDto>.Failure("No products found.")
+            };
+            }
+
+            // Map Product entity to ProductResponseDto and wrap with Result
+            var result = products.Select(product =>
+            {
+                // Direct mapping to ProductResponseDto
+                var productResponseDto = new ProductResponseDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    Description = product.Description
+                    // You can add any other properties that you have in ProductResponseDto here
+                };
+
+                return Result<ProductResponseDto>.Success(productResponseDto);
+            }).ToList();
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions (e.g., logging)
+            return new List<Result<ProductResponseDto>>
+        {
+            Result<ProductResponseDto>.Failure($"An error occurred: {ex.Message}")
+        };
+        }
+    }
+
     public async Task<IEnumerable<Result<ProductResponseDto>>> GetAllProductAsync()
     {
         try

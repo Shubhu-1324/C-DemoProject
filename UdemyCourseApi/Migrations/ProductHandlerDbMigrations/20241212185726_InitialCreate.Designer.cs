@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UdemyCourseApi.Data;
 
@@ -11,9 +12,11 @@ using UdemyCourseApi.Data;
 namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
 {
     [DbContext(typeof(ProductHandlerDb))]
-    partial class ProductHandlerDbModelSnapshot : ModelSnapshot
+    [Migration("20241212185726_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,17 +74,17 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a02ad5ee-9d90-4f3c-987c-75cc24a5a3a7"),
+                            Id = new Guid("de03f14f-1693-4580-9159-266b15733ce5"),
                             Name = "Men"
                         },
                         new
                         {
-                            Id = new Guid("f3c2afc9-57ac-40f6-9943-9d797a0240c9"),
+                            Id = new Guid("b03bccbb-52af-457d-b72f-637bc50f534a"),
                             Name = "Women"
                         },
                         new
                         {
-                            Id = new Guid("77c3096b-eda4-4955-b84b-258e64a02c81"),
+                            Id = new Guid("623e63e2-6e22-4cab-9c87-b4558f6a76de"),
                             Name = "Child"
                         });
                 });
@@ -128,27 +131,6 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("UdemyCourseApi.Models.Domain.ProductImages", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductImages");
-                });
-
             modelBuilder.Entity("UdemyCourseApi.Models.Domain.Category", b =>
                 {
                     b.HasOne("UdemyCourseApi.Models.Domain.Category", "ParentCategory")
@@ -158,25 +140,9 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.Navigation("ParentCategory");
                 });
 
-            modelBuilder.Entity("UdemyCourseApi.Models.Domain.ProductImages", b =>
-                {
-                    b.HasOne("UdemyCourseApi.Models.Domain.Product", "Product")
-                        .WithMany("Images")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("UdemyCourseApi.Models.Domain.Category", b =>
                 {
                     b.Navigation("Subcategories");
-                });
-
-            modelBuilder.Entity("UdemyCourseApi.Models.Domain.Product", b =>
-                {
-                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

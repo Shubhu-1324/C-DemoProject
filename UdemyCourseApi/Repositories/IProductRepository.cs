@@ -15,5 +15,7 @@ namespace UdemyCourseApi.Repositories
 
         public  Task<Result<ProductResponseDto>> DeleteProductAsync(Guid id);
 
+        public Task<IEnumerable<Result<ProductResponseDto>>> GetAllLatestProductAsync();
+
     }
 }
