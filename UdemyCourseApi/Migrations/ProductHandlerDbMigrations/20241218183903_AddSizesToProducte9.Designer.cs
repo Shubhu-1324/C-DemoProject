@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UdemyCourseApi.Data;
 
@@ -11,9 +12,11 @@ using UdemyCourseApi.Data;
 namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
 {
     [DbContext(typeof(ProductHandlerDb))]
-    partial class ProductHandlerDbModelSnapshot : ModelSnapshot
+    [Migration("20241218183903_AddSizesToProducte9")]
+    partial class AddSizesToProducte9
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

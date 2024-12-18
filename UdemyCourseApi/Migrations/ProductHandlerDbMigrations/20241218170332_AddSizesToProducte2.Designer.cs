@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UdemyCourseApi.Data;
 
@@ -11,9 +12,11 @@ using UdemyCourseApi.Data;
 namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
 {
     [DbContext(typeof(ProductHandlerDb))]
-    partial class ProductHandlerDbModelSnapshot : ModelSnapshot
+    [Migration("20241218170332_AddSizesToProducte2")]
+    partial class AddSizesToProducte2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ProductProductSize", b =>
-                {
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SizesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ProductId", "SizesId");
-
-                    b.HasIndex("SizesId");
-
-                    b.ToTable("ProductProductSizes", (string)null);
-                });
 
             modelBuilder.Entity("UdemyCourseApi.Models.Domain.CartHandler", b =>
                 {
@@ -86,17 +74,17 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7cdeee6d-abcc-4e01-a6dc-4a462f91fc99"),
+                            Id = new Guid("6c48b3eb-42f5-4c22-a4d5-3e13381cc082"),
                             Name = "Men"
                         },
                         new
                         {
-                            Id = new Guid("00278036-36b6-413a-846d-a94ef8524230"),
+                            Id = new Guid("b2de839d-13bb-484b-9bd1-1517ffb4843e"),
                             Name = "Women"
                         },
                         new
                         {
-                            Id = new Guid("a0db5ff9-4c28-4d0f-afb7-848edb51ab5d"),
+                            Id = new Guid("ddb2e705-282d-44f4-992c-382380e190ad"),
                             Name = "Child"
                         });
                 });
@@ -107,11 +95,12 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AvailableSizes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("City")
                         .HasColumnType("int");
-
-                    b.Property<string>("Color")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -121,16 +110,10 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<decimal?>("Discount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Fabric")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsAvailable")
@@ -144,18 +127,6 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RentalDuration")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SecurityDeposit")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Sku")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Stock")
                         .IsRequired()
@@ -191,58 +162,6 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductImages");
-                });
-
-            modelBuilder.Entity("UdemyCourseApi.Models.Domain.ProductSize", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Size")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductSizes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("91766ec7-1efc-44ff-bd36-bffa18e5ef20"),
-                            Size = "Small"
-                        },
-                        new
-                        {
-                            Id = new Guid("acf1dc39-dc67-4b6d-bdd6-25dd9fcd90d6"),
-                            Size = "Medium"
-                        },
-                        new
-                        {
-                            Id = new Guid("c001358d-d66e-4563-8f48-1d8bda05e17c"),
-                            Size = "Large"
-                        },
-                        new
-                        {
-                            Id = new Guid("926f53fe-2591-4872-be84-047c0f6a8d2b"),
-                            Size = "X-Large"
-                        });
-                });
-
-            modelBuilder.Entity("ProductProductSize", b =>
-                {
-                    b.HasOne("UdemyCourseApi.Models.Domain.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UdemyCourseApi.Models.Domain.ProductSize", null)
-                        .WithMany()
-                        .HasForeignKey("SizesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("UdemyCourseApi.Models.Domain.Category", b =>

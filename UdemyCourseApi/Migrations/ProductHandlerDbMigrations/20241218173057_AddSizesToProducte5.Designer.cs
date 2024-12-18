@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UdemyCourseApi.Data;
 
@@ -11,9 +12,11 @@ using UdemyCourseApi.Data;
 namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
 {
     [DbContext(typeof(ProductHandlerDb))]
-    partial class ProductHandlerDbModelSnapshot : ModelSnapshot
+    [Migration("20241218173057_AddSizesToProducte5")]
+    partial class AddSizesToProducte5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,17 +89,17 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7cdeee6d-abcc-4e01-a6dc-4a462f91fc99"),
+                            Id = new Guid("ea0eedd0-72ba-4b8b-a3ba-c11dcddd67f8"),
                             Name = "Men"
                         },
                         new
                         {
-                            Id = new Guid("00278036-36b6-413a-846d-a94ef8524230"),
+                            Id = new Guid("cc14ba8f-c4d7-452f-ad32-bc396ea0d346"),
                             Name = "Women"
                         },
                         new
                         {
-                            Id = new Guid("a0db5ff9-4c28-4d0f-afb7-848edb51ab5d"),
+                            Id = new Guid("6dc45eed-2d08-470f-9489-52b33ea86b14"),
                             Name = "Child"
                         });
                 });
@@ -110,9 +113,6 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.Property<int>("City")
                         .HasColumnType("int");
 
-                    b.Property<string>("Color")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -121,16 +121,10 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<decimal?>("Discount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Fabric")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsAvailable")
@@ -144,18 +138,6 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RentalDuration")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SecurityDeposit")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Sku")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Stock")
                         .IsRequired()
@@ -210,22 +192,22 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("91766ec7-1efc-44ff-bd36-bffa18e5ef20"),
+                            Id = new Guid("833ee945-e6e0-4948-a179-6906ec9f7eda"),
                             Size = "Small"
                         },
                         new
                         {
-                            Id = new Guid("acf1dc39-dc67-4b6d-bdd6-25dd9fcd90d6"),
+                            Id = new Guid("efbafc15-9242-4630-8b7e-e10a8c3b8028"),
                             Size = "Medium"
                         },
                         new
                         {
-                            Id = new Guid("c001358d-d66e-4563-8f48-1d8bda05e17c"),
+                            Id = new Guid("e95509a3-7ea7-4bbc-9d44-9227c6fadafd"),
                             Size = "Large"
                         },
                         new
                         {
-                            Id = new Guid("926f53fe-2591-4872-be84-047c0f6a8d2b"),
+                            Id = new Guid("5842ef55-f6bf-4bbe-9987-c9ff15607877"),
                             Size = "X-Large"
                         });
                 });

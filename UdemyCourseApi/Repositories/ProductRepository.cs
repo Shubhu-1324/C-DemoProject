@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 using System.IO;
 using UdemyCourseApi.Data;
 using UdemyCourseApi.ExceptionHandler;
@@ -26,45 +27,61 @@ public class ProductRepository:IProductRepository
     {
         try
         {
+            if (productRequestDto.Images == null || productRequestDto.Images.Count == 0)
+                throw new Exception("No files uploaded.");
+
             var product = _mapper.Map<Product>(productRequestDto);
-            if (productRequestDto.Image == null || productRequestDto.Image.Length == 0)
-                throw new Exception("Invalid file");
-            var webhost = _webHostEnvironment.WebRootPath;
             var imagesFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
             if (!Directory.Exists(imagesFolder))
             {
                 Directory.CreateDirectory(imagesFolder);
             }
-
-            var imageName = $"{Guid.NewGuid()}{Path.GetExtension(productRequestDto.Image.FileName)}";
-
-            // Save the file (example logic)
-            var filePath = Path.Combine(imagesFolder, imageName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            var imageEntities = new List<ProductImages>();
+            foreach (var imageFile in productRequestDto.Images)
             {
-                await productRequestDto.Image.CopyToAsync(stream);
+                var imageName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+                var filePath = Path.Combine(imagesFolder, imageName);
+
+                // Save the file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+                imageEntities.Add(new ProductImages
+                {
+                    Id = Guid.NewGuid(),
+                    ImageUrl = $"/images/{imageName}"
+                });
+
             }
-            product.ImageUrl = $"/images/{imageName}";
-            product.Id=new Guid();
-            product.CreatedDate= DateTime.Now;
+
+
+
+            var sizes = await _productHandler.ProductSizes
+                .Where(size => productRequestDto.Sizes.Contains(size.Id))
+                .ToListAsync();
+            product.Sizes = sizes;
+            product.Images = imageEntities;
+            product.Id = Guid.NewGuid();
+            product.CreatedDate = DateTime.UtcNow;
+
             await _productHandler.Products.AddAsync(product);
             await _productHandler.SaveChangesAsync();
 
             var productResponseDto = _mapper.Map<ProductResponseDto>(product);
             return Result<ProductResponseDto>.Success(productResponseDto);
         }
-        catch(ProductException ex)
+        catch (ProductException ex)
         {
             var errorResponse = new ProductResponseDto
             {
-                Error = ex.Message  
+                Error = ex.Message
             };
             return Result<ProductResponseDto>.Failure(errorResponse.Error);
 
         }
         catch (Exception ex)
         {
-            // Handle general exceptions and return an error response
             var errorResponse = new ProductResponseDto
             {
                 Error = $"An unexpected error occurred: {ex.Message}"
@@ -76,8 +93,10 @@ public class ProductRepository:IProductRepository
 
     public async Task<Result<ProductResponseDto>> DeleteProductAsync(Guid id)
     {
-        var product = await _productHandler.Products.FirstOrDefaultAsync(p => p.Id==id);
-        if(product==null)
+        var product =  await _productHandler.Products
+                .Include(p => p.Images)  
+                .FirstOrDefaultAsync(p => p.Id == id);
+        if (product==null)
         {
             var errorResponse = new ProductResponseDto
             {
@@ -87,14 +106,24 @@ public class ProductRepository:IProductRepository
         }
 
         _productHandler.Remove(product);
-        if (!string.IsNullOrEmpty(product.ImageUrl))
+        if (product.Images != null && product.Images.Any())
         {
-            var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.ImageUrl.TrimStart('/'));
-            if (File.Exists(oldImagePath))
+            foreach (var image in product.Images)
             {
-                File.Delete(oldImagePath);
+                var imageUrl = image.ImageUrl.TrimStart('/');
+                if (imageUrl.StartsWith("images/"))
+                {
+                    imageUrl = imageUrl.Substring("images/".Length);  
+                }
+                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", imageUrl);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath); 
+                }
             }
         }
+
+
         await _productHandler.SaveChangesAsync();
         return Result<ProductResponseDto>.Success(new ProductResponseDto
         {
@@ -111,8 +140,6 @@ public class ProductRepository:IProductRepository
             var products = await _productHandler.Products
                                                   .OrderByDescending(p => p.CreatedDate)
                                                   .ToListAsync();
-
-            // Ensure that products are not null or empty
             if (products == null || !products.Any())
             {
                 return new List<Result<ProductResponseDto>>
@@ -120,18 +147,14 @@ public class ProductRepository:IProductRepository
                 Result<ProductResponseDto>.Failure("No products found.")
             };
             }
-
-            // Map Product entity to ProductResponseDto and wrap with Result
             var result = products.Select(product =>
             {
-                // Direct mapping to ProductResponseDto
                 var productResponseDto = new ProductResponseDto
                 {
                     Id = product.Id,
                     Name = product.Name,
                     Price = product.Price,
-                    Description = product.Description
-                    // You can add any other properties that you have in ProductResponseDto here
+                    Description = product.Description 
                 };
 
                 return Result<ProductResponseDto>.Success(productResponseDto);
@@ -154,11 +177,20 @@ public class ProductRepository:IProductRepository
         try
         {
             var products = await _productHandler.Products
-                .ProjectTo<ProductResponseDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
-
-            // Wrap each ProductResponseDto in a Result<ProductResponseDto>
-            var result = products.Select(product => Result<ProductResponseDto>.Success(product)).ToList();
+                        .Include(p => p.Images)
+                        .Include(p => p.Sizes)
+                        .Select(p => new ProductResponseDto
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            Description = p.Description,
+                            Price = p.Price,
+                            ImageUrls = p.Images.Select(i => i.ImageUrl).ToList(),
+                            Sizes = p.Sizes.Select(s => s.Id).ToList(),  // Get only the Ids of the sizes
+                        })
+                    .ToListAsync();
+            var productDtos = _mapper.Map<List<ProductResponseDto>>(products);
+            var result = productDtos.Select(dto => Result<ProductResponseDto>.Success(dto)).ToList();
 
             return result;
         }
@@ -192,9 +224,11 @@ public class ProductRepository:IProductRepository
     {
         try
         {
+         
             var product = await _productHandler.Products
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id==productId);
+            .Include(p => p.Images)
+            .Include(p=>p.Sizes)
+            .FirstOrDefaultAsync(p => p.Id == productId);
             if (product==null)
             {
                 var errorResponse = new ProductResponseDto
@@ -230,7 +264,9 @@ public class ProductRepository:IProductRepository
     {
         try
         {
-            var product = await _productHandler.Products.FirstOrDefaultAsync(p=> p.Id==id);
+            var product = await _productHandler.Products
+               .Include(p => p.Images)
+               .FirstOrDefaultAsync(p => p.Id == id);
             if (product==null)
             {
                 var errorResponse1 = new ProductResponseDto
@@ -245,15 +281,20 @@ public class ProductRepository:IProductRepository
             product.Description= productRequestDto.Description;
             product.IsAvailable= productRequestDto.IsAvailable;
             product.Name= productRequestDto.Name;
-
-            if (productRequestDto.Image != null && productRequestDto.Image.Length > 0)
+            product.UserId= productRequestDto.UserId;
+            if (productRequestDto.Images!=null && productRequestDto.Images.Any())
             {
-                if (!string.IsNullOrEmpty(product.ImageUrl))
+                foreach (var image in product.Images)
                 {
-                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.ImageUrl.TrimStart('/'));
-                    if (File.Exists(oldImagePath))
+                    var imageUrl = image.ImageUrl.TrimStart('/');
+                    if (imageUrl.StartsWith("images/"))
                     {
-                        File.Delete(oldImagePath);
+                        imageUrl = imageUrl.Substring("images/".Length);
+                    }
+                    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", imageUrl);
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
                     }
                 }
                 var webhost = _webHostEnvironment.WebRootPath;
@@ -262,16 +303,28 @@ public class ProductRepository:IProductRepository
                 {
                     Directory.CreateDirectory(imagesFolder);
                 }
-
-                var imageName = $"{Guid.NewGuid()}{Path.GetExtension(productRequestDto.Image.FileName)}";
-
-                // Save the file (example logic)
-                var filePath = Path.Combine(imagesFolder, imageName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                var imageEntities = new List<ProductImages>();
+                foreach (var imageFile in productRequestDto.Images)
                 {
-                    await productRequestDto.Image.CopyToAsync(stream);
+                    var imageName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+                    var filePath = Path.Combine(imagesFolder, imageName);
+
+                    // Save the file
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+                    imageEntities.Add(new ProductImages
+                    {
+                        Id = Guid.NewGuid(),
+                        ImageUrl = $"/images/{imageName}",
+                        ProductId = id
+                    }); ;
+
                 }
-                product.ImageUrl = $"/images/{imageName}";
+                product.Images = imageEntities;
+
+
 
                 await _productHandler.SaveChangesAsync();
 

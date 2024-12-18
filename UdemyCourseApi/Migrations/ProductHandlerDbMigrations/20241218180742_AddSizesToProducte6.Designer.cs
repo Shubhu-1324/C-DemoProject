@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UdemyCourseApi.Data;
 
@@ -11,9 +12,11 @@ using UdemyCourseApi.Data;
 namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
 {
     [DbContext(typeof(ProductHandlerDb))]
-    partial class ProductHandlerDbModelSnapshot : ModelSnapshot
+    [Migration("20241218180742_AddSizesToProducte6")]
+    partial class AddSizesToProducte6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,17 +89,17 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7cdeee6d-abcc-4e01-a6dc-4a462f91fc99"),
+                            Id = new Guid("7e8fec38-2091-4b2a-bcbf-25719f9ae89e"),
                             Name = "Men"
                         },
                         new
                         {
-                            Id = new Guid("00278036-36b6-413a-846d-a94ef8524230"),
+                            Id = new Guid("bfff0c5b-ed6a-4ad3-a937-1394eb004948"),
                             Name = "Women"
                         },
                         new
                         {
-                            Id = new Guid("a0db5ff9-4c28-4d0f-afb7-848edb51ab5d"),
+                            Id = new Guid("905f66dd-df33-4508-85f2-14f58a677113"),
                             Name = "Child"
                         });
                 });
@@ -121,9 +124,6 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<decimal?>("Discount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Fabric")
                         .HasColumnType("nvarchar(max)");
 
@@ -144,12 +144,6 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RentalDuration")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("SecurityDeposit")
                         .HasColumnType("decimal(18,2)");
@@ -210,22 +204,22 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("91766ec7-1efc-44ff-bd36-bffa18e5ef20"),
+                            Id = new Guid("945a7842-6949-46c5-9f91-61c9d944413d"),
                             Size = "Small"
                         },
                         new
                         {
-                            Id = new Guid("acf1dc39-dc67-4b6d-bdd6-25dd9fcd90d6"),
+                            Id = new Guid("be99fa21-8139-4393-9b28-6ebe394eb4b3"),
                             Size = "Medium"
                         },
                         new
                         {
-                            Id = new Guid("c001358d-d66e-4563-8f48-1d8bda05e17c"),
+                            Id = new Guid("55f0246b-22f8-4dca-8c22-c4843b089523"),
                             Size = "Large"
                         },
                         new
                         {
-                            Id = new Guid("926f53fe-2591-4872-be84-047c0f6a8d2b"),
+                            Id = new Guid("e626faa2-14b3-45ef-a996-6b48e2039f3b"),
                             Size = "X-Large"
                         });
                 });

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UdemyCourseApi.Data;
 
@@ -11,9 +12,11 @@ using UdemyCourseApi.Data;
 namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
 {
     [DbContext(typeof(ProductHandlerDb))]
-    partial class ProductHandlerDbModelSnapshot : ModelSnapshot
+    [Migration("20241218181204_AddSizesToProducte8")]
+    partial class AddSizesToProducte8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,17 +89,17 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7cdeee6d-abcc-4e01-a6dc-4a462f91fc99"),
+                            Id = new Guid("d814cf8c-3db2-49c1-b61c-581514cd474b"),
                             Name = "Men"
                         },
                         new
                         {
-                            Id = new Guid("00278036-36b6-413a-846d-a94ef8524230"),
+                            Id = new Guid("3a264abe-d268-470f-a149-342c05518b57"),
                             Name = "Women"
                         },
                         new
                         {
-                            Id = new Guid("a0db5ff9-4c28-4d0f-afb7-848edb51ab5d"),
+                            Id = new Guid("dc71b2d3-983b-47b6-8d02-187e2ad3a70b"),
                             Name = "Child"
                         });
                 });
@@ -145,11 +148,8 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProductStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RentalDuration")
-                        .HasColumnType("int");
+                    b.Property<string>("RentalDuration")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("SecurityDeposit")
                         .HasColumnType("decimal(18,2)");
@@ -210,22 +210,22 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("91766ec7-1efc-44ff-bd36-bffa18e5ef20"),
+                            Id = new Guid("56397ceb-72de-4b47-a6ac-879ffe9edbaf"),
                             Size = "Small"
                         },
                         new
                         {
-                            Id = new Guid("acf1dc39-dc67-4b6d-bdd6-25dd9fcd90d6"),
+                            Id = new Guid("fe0a43d1-d572-4795-ad3c-6c16230186a3"),
                             Size = "Medium"
                         },
                         new
                         {
-                            Id = new Guid("c001358d-d66e-4563-8f48-1d8bda05e17c"),
+                            Id = new Guid("61cef7d6-6e98-4abe-81f1-1dde2fdf9e07"),
                             Size = "Large"
                         },
                         new
                         {
-                            Id = new Guid("926f53fe-2591-4872-be84-047c0f6a8d2b"),
+                            Id = new Guid("2973d482-37f5-4192-afc6-1579b4fbf6f3"),
                             Size = "X-Large"
                         });
                 });

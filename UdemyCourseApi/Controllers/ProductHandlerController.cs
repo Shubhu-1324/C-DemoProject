@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UdemyCourseApi.Models.DTO;
 using UdemyCourseApi.Repositories;
@@ -18,6 +19,8 @@ namespace UdemyCourseApi.Controllers
 
         [HttpPost]
         [Route("addProduct")]
+
+        
         public async Task<IActionResult> AddProduct([FromForm] ProductRequestDto productRequestDto)
         {
             try
@@ -29,6 +32,7 @@ namespace UdemyCourseApi.Controllers
         }
         [HttpGet]
         [Route("getAllProduct")]
+
         public async Task<IActionResult> GetAllProduct()
         {
             try
@@ -52,7 +56,7 @@ namespace UdemyCourseApi.Controllers
 
         [HttpPut]
         [Route("updateProduct")]
-
+       
         public async Task<IActionResult> UpdateProduct(Guid id,[FromForm] UpdateProductDto UpdateProductDto)
         {
             try
@@ -67,7 +71,7 @@ namespace UdemyCourseApi.Controllers
 
         [HttpDelete]
         [Route("deleteProduct")]
-
+        [Authorize(Roles = "Admin,Vendor")]
         public async Task<IActionResult> DeleteProductById(Guid id)
         {
             try
