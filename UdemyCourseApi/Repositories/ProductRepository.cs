@@ -27,41 +27,31 @@ public class ProductRepository:IProductRepository
     {
         try
         {
-            if (productRequestDto.Images == null || productRequestDto.Images.Count == 0)
-                throw new Exception("No files uploaded.");
-
             var product = _mapper.Map<Product>(productRequestDto);
+            if (productRequestDto.Image == null || productRequestDto.Image.Length == 0)
+                throw new Exception("Invalid file");
+            var webhost = _webHostEnvironment.WebRootPath;
             var imagesFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
             if (!Directory.Exists(imagesFolder))
             {
                 Directory.CreateDirectory(imagesFolder);
             }
-            var imageEntities = new List<ProductImages>();
-            foreach (var imageFile in productRequestDto.Images)
+
+            var imageName = $"{Guid.NewGuid()}{Path.GetExtension(productRequestDto.Image.FileName)}";
+
+            // Save the file (example logic)
+            var filePath = Path.Combine(imagesFolder, imageName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                var imageName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                var filePath = Path.Combine(imagesFolder, imageName);
-
-                // Save the file
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(stream);
-                }
-                imageEntities.Add(new ProductImages
-                {
-                    Id = Guid.NewGuid(),
-                    ImageUrl = $"/images/{imageName}"
-                });
-
+                await productRequestDto.Image.CopyToAsync(stream);
             }
-
+            product.ImageUrl = $"/images/{imageName}";
 
 
             var sizes = await _productHandler.ProductSizes
                 .Where(size => productRequestDto.Sizes.Contains(size.Id))
                 .ToListAsync();
             product.Sizes = sizes;
-            product.Images = imageEntities;
             product.Id = Guid.NewGuid();
             product.CreatedDate = DateTime.UtcNow;
 

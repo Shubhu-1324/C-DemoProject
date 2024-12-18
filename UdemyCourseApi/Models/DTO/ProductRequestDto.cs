@@ -29,16 +29,18 @@ namespace UdemyCourseApi.Models.DTO
         public City City { get; set; }
 
         [Required]
-        public ProductStatus ProductStatus { get; set; }    
+        public ProductStatus ProductStatus { get; set; }
       
         [Required(ErrorMessage = "Available sizes are required.")]
         public List<Guid> Sizes { get; set; } = new List<Guid>();
 
-        [Required]
-        public IFormFileCollection Images { get; set; }
+  //      [Required]
+//public IFormFileCollection Images { get; set; }
 
         [Required]
         public Guid UserId { get; set; }
+
+        public IFormFile Image { get; set; }
 
         public string? Fabric { get; set; }
 
