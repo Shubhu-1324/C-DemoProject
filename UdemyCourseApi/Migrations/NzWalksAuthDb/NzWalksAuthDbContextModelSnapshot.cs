@@ -51,6 +51,20 @@ namespace UdemyCourseApi.Migrations.NzWalksAuthDb
                     b.HasData(
                         new
                         {
+                            Id = "a7d1b5a1-e249-4f88-830d-b08b8e13b0b9",
+                            ConcurrencyStamp = "a7d1b5a1-e249-4f88-830d-b08b8e13b0b9",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "b0c7ccad-87c2-4874-8e3b-e7e2a9234056",
+                            ConcurrencyStamp = "b0c7ccad-87c2-4874-8e3b-e7e2a9234056",
+                            Name = "Vendor",
+                            NormalizedName = "VENDOR"
+                        },
+                        new
+                        {
                             Id = "e1d43a91-2c43-4e0b-8430-1b8f3e378401",
                             ConcurrencyStamp = "e1d43a91-2c43-4e0b-8430-1b8f3e378401",
                             Name = "Reader",

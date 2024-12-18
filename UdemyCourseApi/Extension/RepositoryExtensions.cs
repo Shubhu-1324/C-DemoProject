@@ -11,6 +11,8 @@ namespace UdemyCourseApi.Extension
             services.AddScoped<IWalkerRepository, SqlWalkRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddScoped<IProductRepository,ProductRepository>();
+            services.AddScoped<ICartRepository, CartRepository>();
+
             return services;
         }
     }
