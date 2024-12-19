@@ -37,17 +37,18 @@ public class ProductRepository:IProductRepository
             var primaryImagePath = await _imageProcessingService.SaveImageAsync(productRequestDto.Image);
              product = new Product
             {
-                 Name = productRequestDto.Name,
+               
                  ImageUrl=primaryImagePath
             };
-
+            product.Id = Guid.NewGuid();
             var entities = new List<ProductImages>();
             foreach(var image in productRequestDto.Images) {
                 var imagePath = await _imageProcessingService.SaveImageAsync(image);
                 entities.Add(new ProductImages {
                     
                     Id= Guid.NewGuid(),
-                    ImageUrl = imagePath 
+                    ImageUrl = imagePath ,
+                    ProductId=product.Id
                 });
             }
             product.Images = entities;
@@ -55,7 +56,7 @@ public class ProductRepository:IProductRepository
                 .Where(size => productRequestDto.Sizes.Contains(size.Id))
                 .ToListAsync();
             product.Sizes = sizes;
-            product.Id = Guid.NewGuid();
+            
             product.CreatedDate = DateTime.UtcNow;
 
             await _productHandler.Products.AddAsync(product);
