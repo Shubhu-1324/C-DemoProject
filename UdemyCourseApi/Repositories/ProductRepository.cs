@@ -46,11 +46,11 @@ public class ProductRepository:IProductRepository
                 var imagePath = await _imageProcessingService.SaveImageAsync(image);
                 entities.Add(new ProductImages {
                     
-                    Id=new Guid(),
+                    Id= Guid.NewGuid(),
                     ImageUrl = imagePath 
                 });
             }
-
+            product.Images = entities;
             var sizes = await _productHandler.ProductSizes
                 .Where(size => productRequestDto.Sizes.Contains(size.Id))
                 .ToListAsync();
