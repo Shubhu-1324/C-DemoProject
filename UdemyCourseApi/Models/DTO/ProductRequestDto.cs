@@ -34,8 +34,9 @@ namespace UdemyCourseApi.Models.DTO
         [Required(ErrorMessage = "Available sizes are required.")]
         public List<Guid> Sizes { get; set; } = new List<Guid>();
 
-  //      [Required]
-//public IFormFileCollection Images { get; set; }
+
+        [Required]
+        public IFormFileCollection Images { get; set; }
 
         [Required]
         public Guid UserId { get; set; }

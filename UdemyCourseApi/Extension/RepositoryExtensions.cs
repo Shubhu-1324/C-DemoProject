@@ -1,4 +1,5 @@
 ﻿using UdemyCourseApi.Repositories;
+using UdemyCourseApi.Service;
 
 namespace UdemyCourseApi.Extension
 {
@@ -12,6 +13,7 @@ namespace UdemyCourseApi.Extension
             services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddScoped<IProductRepository,ProductRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IImageProcessingService, ImageProcessing>();
 
             return services;
         }
