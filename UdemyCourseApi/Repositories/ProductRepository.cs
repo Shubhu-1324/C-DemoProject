@@ -9,18 +9,21 @@ using UdemyCourseApi.ExceptionHandler;
 using UdemyCourseApi.Models.Domain;
 using UdemyCourseApi.Models.DTO;
 using UdemyCourseApi.Repositories;
+using UdemyCourseApi.Service;
 
 public class ProductRepository:IProductRepository
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IMapper _mapper;
     private readonly ProductHandlerDb _productHandler;
+    private readonly IImageProcessingService _imageProcessingService;
 
-    public ProductRepository(IWebHostEnvironment webHostEnvironment,IMapper mapper,ProductHandlerDb productHandler)
+    public ProductRepository(IWebHostEnvironment webHostEnvironment,IMapper mapper,ProductHandlerDb productHandler,IImageProcessingService imageProcessingService)
     {
         _webHostEnvironment = webHostEnvironment;
         _mapper=mapper;
         _productHandler=productHandler;
+        _imageProcessingService = imageProcessingService;
     }
     
     public async Task<Result<ProductResponseDto>> AddProductAsync(ProductRequestDto productRequestDto)
@@ -30,23 +33,23 @@ public class ProductRepository:IProductRepository
             var product = _mapper.Map<Product>(productRequestDto);
             if (productRequestDto.Image == null || productRequestDto.Image.Length == 0)
                 throw new Exception("Invalid file");
-            var webhost = _webHostEnvironment.WebRootPath;
-            var imagesFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-            if (!Directory.Exists(imagesFolder))
+
+            var primaryImagePath = await _imageProcessingService.SaveImageAsync(productRequestDto.Image);
+             product = new Product
             {
-                Directory.CreateDirectory(imagesFolder);
+                 Name = productRequestDto.Name,
+                 ImageUrl=primaryImagePath
+            };
+
+            var entities = new List<ProductImages>();
+            foreach(var image in productRequestDto.Images) {
+                var imagePath = await _imageProcessingService.SaveImageAsync(image);
+                entities.Add(new ProductImages {
+                    
+                    Id=new Guid(),
+                    ImageUrl = imagePath 
+                });
             }
-
-            var imageName = $"{Guid.NewGuid()}{Path.GetExtension(productRequestDto.Image.FileName)}";
-
-            // Save the file (example logic)
-            var filePath = Path.Combine(imagesFolder, imageName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await productRequestDto.Image.CopyToAsync(stream);
-            }
-            product.ImageUrl = $"/images/{imageName}";
-
 
             var sizes = await _productHandler.ProductSizes
                 .Where(size => productRequestDto.Sizes.Contains(size.Id))
