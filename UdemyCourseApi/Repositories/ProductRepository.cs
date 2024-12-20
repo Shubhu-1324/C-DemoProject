@@ -31,39 +31,54 @@ public class ProductRepository:IProductRepository
         try
         {
             var product = _mapper.Map<Product>(productRequestDto);
+
+            // Validate the primary image
             if (productRequestDto.Image == null || productRequestDto.Image.Length == 0)
                 throw new Exception("Invalid file");
 
+            // Save the primary image
             var primaryImagePath = await _imageProcessingService.SaveImageAsync(productRequestDto.Image);
-             product = new Product
-            {
-               
-                 ImageUrl=primaryImagePath
-            };
+            product.ImageUrl = primaryImagePath;
+
+            // Assign a new GUID for the Product
             product.Id = Guid.NewGuid();
-            var entities = new List<ProductImages>();
-            foreach(var image in productRequestDto.Images) {
+            product.CreatedDate = DateTime.UtcNow;
+
+            // Handle Product Images
+            var productImages = new List<ProductImages>();
+            foreach (var image in productRequestDto.Images)
+            {
                 var imagePath = await _imageProcessingService.SaveImageAsync(image);
-                entities.Add(new ProductImages {
-                    
-                    Id= Guid.NewGuid(),
-                    ImageUrl = imagePath ,
-                    ProductId=product.Id
+                productImages.Add(new ProductImages
+                {
+                    Id = Guid.NewGuid(),
+                    ImageUrl = imagePath,
+                    ProductId = product.Id // Ensure this references the newly generated Product ID
                 });
             }
-            product.Images = entities;
+            product.Images = productImages;
+
+            // Handle Sizes
             var sizes = await _productHandler.ProductSizes
                 .Where(size => productRequestDto.Sizes.Contains(size.Id))
                 .ToListAsync();
-            product.Sizes = sizes;
-            
-            product.CreatedDate = DateTime.UtcNow;
 
+            if (!sizes.Any())
+                throw new Exception("Invalid sizes provided.");
+
+            product.Sizes = sizes;
+
+            // Default fallback for optional properties
+            product.Description = productRequestDto.Description ?? "Default description";
+
+            // Add and Save Product
             await _productHandler.Products.AddAsync(product);
             await _productHandler.SaveChangesAsync();
 
+            // Map Product to Response DTO
             var productResponseDto = _mapper.Map<ProductResponseDto>(product);
             return Result<ProductResponseDto>.Success(productResponseDto);
+
         }
         catch (ProductException ex)
         {

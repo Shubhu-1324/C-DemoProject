@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UdemyCourseApi.Data;
 
@@ -11,9 +12,11 @@ using UdemyCourseApi.Data;
 namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
 {
     [DbContext(typeof(ProductHandlerDb))]
-    partial class ProductHandlerDbModelSnapshot : ModelSnapshot
+    [Migration("20241220023522_AddCityToProduct3")]
+    partial class AddCityToProduct3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,17 +89,17 @@ namespace UdemyCourseApi.Migrations.ProductHandlerDbMigrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2b14e240-a021-4e36-95e5-7d7a7c467d8b"),
+                            Id = new Guid("b0cfed6e-65f4-43e2-8d21-1cae3b34557d"),
                             Name = "Men"
                         },
                         new
                         {
-                            Id = new Guid("fe4efccf-5dea-4399-90fd-c8af2c914f2e"),
+                            Id = new Guid("2dba9d08-4ffb-4a95-9ada-29f146a55e3a"),
                             Name = "Women"
                         },
                         new
                         {
-                            Id = new Guid("adc82860-3278-4913-a425-fcd210be54e6"),
+                            Id = new Guid("6081664d-f3f0-4e57-b3ac-796150145330"),
                             Name = "Child"
                         });
                 });
