@@ -9,8 +9,7 @@ namespace UdemyCourseApi.Extension
         public static void AddCustomDatabaseContexts(this IServiceCollection services, IConfiguration configuration)
         {
             // Add the first DbContext
-            services.AddDbContext<NZWalksDBCOntext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("NZWalksConnectionString")));
+           
 
             // Add the second DbContext
             services.AddDbContext<NzWalksAuthDbContext>(options =>

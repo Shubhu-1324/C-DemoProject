@@ -17,5 +17,17 @@ namespace UdemyCourseApi.Repositories
 
         public Task<IEnumerable<Result<ProductResponseDto>>> GetAllLatestProductAsync();
 
+
+        public  Task<GetAllDropDownData> GetDropdownData();
+
+        // Admin funcionaity
+        // accept the product
+
+        public Task<Result<ProductResponseDto>> AdminApproval(Guid productId);
+
+        public Task<Result<List<ProductCategoryResponseDto>>> GetProductAccordingToCategory(Guid categoryId);
+
+        public Task<Result<List<ProductCategoryResponseDto>>> GetProductAccordingToSubCategory(Guid SubCategoryId);
+
     }
 }

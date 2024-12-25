@@ -8,9 +8,9 @@ namespace UdemyCourseApi.Models.Domain
 
         [Required(ErrorMessage = "Image URL is required.")]
         [StringLength(500, ErrorMessage = "Image URL cannot be longer than 500 characters.")]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         public Guid ProductId { get; set; }
-        public Product Product {  get; set; } 
+        public Product? Product {  get; set; } 
     }
 }
