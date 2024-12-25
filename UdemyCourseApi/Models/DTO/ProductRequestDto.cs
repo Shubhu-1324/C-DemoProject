@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using UdemyCourseApi.Models.Domain;
 using UdemyCourseApi.Models.Enums;
 
 namespace UdemyCourseApi.Models.DTO
@@ -9,11 +10,11 @@ namespace UdemyCourseApi.Models.DTO
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Required]
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Range(0.1, double.MaxValue)]
         public decimal Price { get; set; }
@@ -30,24 +31,28 @@ namespace UdemyCourseApi.Models.DTO
 
         [Required]
         public ProductStatus ProductStatus { get; set; }
-      
+
         [Required(ErrorMessage = "Available sizes are required.")]
-        public List<Guid> Sizes { get; set; } = new List<Guid>();
+        public List<Guid> Sizes { get; set; } = [];
 
 
         [Required]
-        public IFormFileCollection Images { get; set; }
+        public IFormFileCollection? Images { get; set; }
 
         [Required]
         public Guid UserId { get; set; }
 
-        public IFormFile Image { get; set; }
+        public IFormFile? Image { get; set; }
 
         public string? Fabric { get; set; }
-
+        public decimal SecurityDeposit {get; set; }
         public int? RentalDuration { get; set; }
 
         public decimal? Discount { get; set; }
-        public string Color { get; set; }
+        public string? Color { get; set; }
+
+        public Guid CategoryId { get; set; }
+
+        public List<Guid>? SubcategoryIds { get; set; }
     }
 }

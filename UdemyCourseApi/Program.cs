@@ -43,6 +43,7 @@ namespace UdemyCourseApi
 
             // Add database contexts
             builder.Services.AddCustomDatabaseContexts(builder.Configuration);
+            builder.Services.AddMemoryCache();
 
             // Add repositories and automapper
             builder.Services.RepositoryCollection();

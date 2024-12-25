@@ -8,14 +8,9 @@ namespace UdemyCourseApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductHandlerController : ControllerBase
+    public class ProductHandlerController(IProductRepository productRepository) : ControllerBase
     {
-        public ProductHandlerController(IProductRepository productRepository)
-        {
-            _productRepository=productRepository;
-        }
-
-        public IProductRepository _productRepository { get; }
+        public IProductRepository ProductRepository { get; } = productRepository;
 
         [HttpPost]
         [Route("addProduct")]
@@ -25,7 +20,7 @@ namespace UdemyCourseApi.Controllers
         {
             try
             {
-                var ProductResponseDto = await _productRepository.AddProductAsync(productRequestDto);
+                var ProductResponseDto = await ProductRepository.AddProductAsync(productRequestDto);
                 return Ok(ProductResponseDto);
             } catch (Exception ex) { return BadRequest(ex.Message); }
 
@@ -37,7 +32,7 @@ namespace UdemyCourseApi.Controllers
         {
             try
             {
-                var productList=await _productRepository.GetAllProductAsync();  
+                var productList=await ProductRepository.GetAllProductAsync();  
                 return Ok(productList);
             }catch(Exception ex) { return BadRequest(ex.Message); }
         }
@@ -49,7 +44,7 @@ namespace UdemyCourseApi.Controllers
         {
             try
             {
-                var product=await _productRepository.GetProductById(guid);
+                var product=await ProductRepository.GetProductById(guid);
                 return Ok(product); 
             }catch(Exception ex) { return BadRequest(ex.Message); }
         }
@@ -61,7 +56,7 @@ namespace UdemyCourseApi.Controllers
         {
             try
             {
-                var UpdatedPropduct = await _productRepository.UpdateProduct(id,UpdateProductDto);
+                var UpdatedPropduct = await ProductRepository.UpdateProduct(id,UpdateProductDto);
                 return Ok(UpdatedPropduct);
             }catch(Exception ex)
             {
@@ -76,9 +71,70 @@ namespace UdemyCourseApi.Controllers
         {
             try
             {
-                var deleteProduct=await _productRepository.DeleteProductAsync(id);
+                var deleteProduct=await ProductRepository.DeleteProductAsync(id);
                 return Ok(deleteProduct);
             }catch(Exception ex) { return BadRequest(ex.Message); }
         }
+
+        [HttpGet]
+        [Route("getAllDropDownValues")]
+        public async Task<IActionResult> GetAllDropDownvalue()
+        {
+            try
+            {
+                var dropDownValues = await ProductRepository.GetDropdownData();
+                return Ok(dropDownValues);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
+
+        }
+        [HttpPut]
+        [Route("AdminApproval")]
+        public async Task<IActionResult>AdinApproval(Guid id)
+        {
+            try
+            {
+                var product=await ProductRepository.AdminApproval(id);
+                return Ok(product); 
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetProductCategoryWise")]
+
+
+        public async Task<IActionResult> GetProductCategoryWise(Guid categoryId)
+        {
+            try
+            {
+                var product = await ProductRepository.GetProductAccordingToCategory(categoryId);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
+        [Route("GetProductSubCategoryWise")]
+        public async Task<IActionResult> GetProductAccordingToSubCategory(Guid subCategoryId)
+        {
+            try
+            {
+                var product = await ProductRepository.GetProductAccordingToSubCategory(subCategoryId);
+                return Ok(product);
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

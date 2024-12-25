@@ -5,10 +5,8 @@
     using Microsoft.EntityFrameworkCore;
     using System.Collections.Generic;
 
-    public class NzWalksAuthDbContext : IdentityDbContext
+    public class NzWalksAuthDbContext(DbContextOptions<NzWalksAuthDbContext> options) : IdentityDbContext(options)
     {
-        public NzWalksAuthDbContext(DbContextOptions<NzWalksAuthDbContext> options) : base(options) { }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -22,28 +20,28 @@
             // Define roles
             var roles = new List<IdentityRole>
             {
-                new IdentityRole
+                new()
                 {
                     Id = adminRoleId,
                     ConcurrencyStamp = adminRoleId,
                     Name = "Admin",
                     NormalizedName = "ADMIN".ToUpper()
                 },
-                new IdentityRole
+              new()
                 {
                     Id = vendorRoleId,
                     ConcurrencyStamp = vendorRoleId,
                     Name = "Vendor",
                     NormalizedName = "VENDOR".ToUpper()
                 },
-                new IdentityRole
+              new()
                 {
                     Id = readerRoleId,
                     ConcurrencyStamp = readerRoleId,
                     Name = "Reader",
                     NormalizedName = "READER".ToUpper()
                 },
-                new IdentityRole
+               new()
                 {
                     Id = writerRoleId,
                     ConcurrencyStamp = writerRoleId,

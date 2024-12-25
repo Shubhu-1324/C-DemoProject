@@ -6,23 +6,34 @@ using System.Text;
 
 namespace UdemyCourseApi.Repositories
 {
-    public class TokenRepository : ITokenRepository
+    public class TokenRepository(IConfiguration configuration) : ITokenRepository
     {
-        public TokenRepository(IConfiguration configuration)
-        {
-            Configuration=configuration;
-        }
+        public IConfiguration Configuration { get; } = configuration;
 
-        public IConfiguration Configuration { get; }
-
-        public string createJWTToken(IdentityUser user, List<string> Roles)
+        public string createJWTToken(IdentityUser user, List<string> roles)
         {
-            var claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            foreach (var role in Roles) { 
-                claims.Add(new Claim(ClaimTypes.Role, role));
+            if (user?.Email == null || roles == null || roles.Count == 0)
+            {
+                throw new ArgumentException("User or roles cannot be null.");
             }
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]));
+
+            var claims = new List<Claim>
+                {
+                    new(ClaimTypes.Email, user.Email ?? "default@example.com") // Default if email is null
+                };
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role ?? "default_role")); // Default if role is null
+            }
+
+            var jwtKey = Configuration["Jwt:Key"];
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new InvalidOperationException("JWT Key is not configured.");
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -38,7 +49,7 @@ namespace UdemyCourseApi.Repositories
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
-
         }
+
     }
 }

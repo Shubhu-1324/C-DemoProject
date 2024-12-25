@@ -9,20 +9,22 @@ namespace UdemyCourseApi.Models.Domain
         public Guid Id { get; set; }
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required(ErrorMessage = "Name is required.")]
         public Guid UserId { get; set; }
 
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(500, ErrorMessage = "Description cannot be longer than 100 characters.")]
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         [Range(0.1, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
         public decimal Price { get; set; }
         public string? Color { get; set; }
 
         public string? Sku { get; set; }
+
+        [Required]
         public decimal SecurityDeposit { get; set; }
 
         [Required(ErrorMessage = "Stock is required.")]
@@ -51,6 +53,12 @@ namespace UdemyCourseApi.Models.Domain
         public int? RentalDuration { get; set; }  
 
         public decimal? Discount { get; set; }
+
+        public Guid CategoryId { get; set; }
+
+        public required Category Category { get; set; }
+
+        public ICollection<ProductSubcategory>? ProductSubcategories { get; set; }  
 
 
     }

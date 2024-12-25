@@ -9,20 +9,11 @@ namespace UdemyCourseApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(UserManager<IdentityUser> userManager, ITokenRepository tokenRepository, IMapper mapper) : ControllerBase
     {
-        // post method
-
-        public AuthController(UserManager<IdentityUser> userManager , ITokenRepository tokenRepository, IMapper mapper)
-        {
-            UserManager=userManager;
-            TokenRepository=tokenRepository;
-            Mapper=mapper;
-        }
-
-        public UserManager<IdentityUser> UserManager { get; }
-        public ITokenRepository TokenRepository { get; }
-        public IMapper Mapper { get; }
+        public UserManager<IdentityUser> UserManager { get; } = userManager;
+        public ITokenRepository TokenRepository { get; } = tokenRepository;
+        public IMapper Mapper { get; } = mapper;
 
         [HttpPost]
         [Route("Register")]
@@ -35,11 +26,11 @@ namespace UdemyCourseApi.Controllers
                 PhoneNumber = registerRequestDto.PhoneNumber
             };
 
-            var identityResult = await UserManager.CreateAsync(identityUser, registerRequestDto.Password);
+            var identityResult = await UserManager.CreateAsync(identityUser, registerRequestDto.Password ?? string.Empty);
 
             if (identityResult.Succeeded)
             {
-                if (registerRequestDto.Roles != null && registerRequestDto.Roles.Any())
+                if (registerRequestDto.Roles != null && registerRequestDto.Roles.Length != 0)
                 {
                     identityResult = await UserManager.AddToRolesAsync(identityUser, registerRequestDto.Roles);
 
@@ -77,20 +68,20 @@ namespace UdemyCourseApi.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] AddRequestLoginDto addRequestLoginDto)
         {
-            var user =await UserManager.FindByEmailAsync(addRequestLoginDto.Username);
+            var user =await UserManager.FindByEmailAsync(addRequestLoginDto.Username ?? string.Empty);
 
             if (user!=null)
             {
 
-                var checkPassword=await UserManager.CheckPasswordAsync(user,addRequestLoginDto.Password);
+                var checkPassword=await UserManager.CheckPasswordAsync(user,addRequestLoginDto.Password ?? string.Empty);
                 if (checkPassword)
                 {
                     var roles = await UserManager.GetRolesAsync(user);
                     if(roles!=null) {
-                        var jwtToken=TokenRepository.createJWTToken(user, roles.ToList());
+                        var jwtToken=TokenRepository.createJWTToken(user, [.. roles]);
 
                         var response=Mapper.Map<LoginResponse>(user);
-                        response.jwtToken = jwtToken;   
+                        response.JwtToken = jwtToken;   
                         return Ok(response);
                     }
                   
