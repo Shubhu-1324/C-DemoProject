@@ -8,6 +8,7 @@ namespace UdemyCourseApi.Extension
         {
 
             services.AddAutoMapper(typeof(AutomapperClass));
+            services.AddAutoMapper(typeof(CategoryMapping));
             return services;
         }
     }

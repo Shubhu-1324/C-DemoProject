@@ -12,6 +12,7 @@ namespace UdemyCourseApi.Extension
             services.AddScoped<IProductRepository,ProductRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IImageProcessingService, ImageProcessing>();
+            services.AddScoped<ICatalogueRepository, CatalogueRepository>();
            // services.AddMemoryCache();
 
 

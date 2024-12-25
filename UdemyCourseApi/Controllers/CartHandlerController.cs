@@ -17,7 +17,7 @@ namespace UdemyCourseApi.Controllers
         }
 
         [HttpPost]
-        [Route("AddCart")]
+      
         public async Task<IActionResult> AddCart([FromBody] CartHandlerRequestDto cartHandlerRequestDto)
         {
 
