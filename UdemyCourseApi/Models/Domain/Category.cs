@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace UdemyCourseApi.Models.Domain
 {
@@ -12,9 +13,8 @@ namespace UdemyCourseApi.Models.Domain
         [StringLength(100, ErrorMessage = "Category name cannot exceed 100 characters.")]
         public string? Name { get; set; }
 
+        public bool IsActive { get; set; } = true;
         public List<Product>? Products { get; set; } = [];
-
-
         public List<SubCategory>? SubCategories { get; set; }    
     }
 }

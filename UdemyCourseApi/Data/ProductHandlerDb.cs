@@ -53,6 +53,7 @@ namespace UdemyCourseApi.Data
             .HasMany(p => p.Sizes)
             .WithMany()
             .UsingEntity(j => j.ToTable("ProductProductSizes"));
+          
 
             modelBuilder.Entity<ProductImages>()
                 .HasOne(i => i.Product)
